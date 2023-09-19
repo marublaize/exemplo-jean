@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - 'site1/**'
+      - 'site2/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      MY_ENV1: my-value-1
+      MY_ENV2: my-value-2
+      MY_ENV3: my-value-3
+      MY_ENV4: my-value-4
+
+    strategy:
+      matrix:
+        site:
+          - site1
+          - site2
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Track changes
+        run: |
+          if [ "${{ matrix.site }}" == "site1" ]; then
+            echo "This job runs whenever changes are made to the 'site1' directory"
+          elif [ "${{ matrix.site }}" == "site2" ]; then
+            echo "This job runs whenever changes are made to the 'site2' directory"
+          fi
+
+      - name: Manual trigger
+        run: echo "This job is manually triggered"
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'workflow_run' && github.event.workflow_run.name == 'CI'
